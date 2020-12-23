@@ -10,32 +10,23 @@ __global__ void mandelKernel(int* d_img, float lowerX, float lowerY, float stepX
 
     unsigned int thisX = blockIdx.x * blockDim.x + threadIdx.x;
     unsigned int thisY = blockIdx.y * blockDim.y + threadIdx.y;
-    size_t g_width = 16;
-    size_t g_height = 16;
-    end_j = thisY + g_height;
-    for (int j = thisY; j < end_j; j++)
-    {
-        for (int i = thisX; i < g_width; ++i)
+    if (thisX < width && thisY < height) {
+        int idx = thisY * width + thisX;
+        float c_re = lowerX + thisX * stepX;
+        float c_im = lowerY + thisY * stepY;
+        float z_re = c_re, z_im = c_im;
+        int i = 0;
+        for (i = 0; i < maxIterations; ++i)
         {
-            if (j < width && i < height) {
-                int idx = j * width + i;
-                float c_re = lowerX + i * stepX;
-                float c_im = lowerY + j * stepY;
-                float z_re = c_re, z_im = c_im;
-                int i = 0;
-                for (i = 0; i < maxIterations; ++i)
-                {
-                    if (z_re * z_re + z_im * z_im > 4.f)
-                        break;
-        
-                    float new_re = z_re * z_re - z_im * z_im;
-                    float new_im = 2.f * z_re * z_im;
-                    z_re = c_re + new_re;
-                    z_im = c_im + new_im;
-                }
-                d_img[idx] = i;
-            }
+            if (z_re * z_re + z_im * z_im > 4.f)
+                break;
+
+            float new_re = z_re * z_re - z_im * z_im;
+            float new_im = 2.f * z_re * z_im;
+            z_re = c_re + new_re;
+            z_im = c_im + new_im;
         }
+        d_img[idx] = i;
     }
 }
 
