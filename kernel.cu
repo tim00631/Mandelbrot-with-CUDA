@@ -60,6 +60,14 @@ void hostFE (float upperX, float upperY, float lowerX, float lowerY, int* img, i
     printf("%d, %d\n",g_width, g_height);
     cudaDeviceSynchronize();
     cudaMemcpy(host_img, d_img, resX * resY * sizeof(int), cudaMemcpyDeviceToHost);
+    
+    for (int j = 0; j < resX; i++) {
+        for (int i = 0; i < resY; j++) {
+            printf("%d", host_img[i][j]);
+        }
+        printf("\n");
+    }
+
     memcpy(img, host_img,resX * resY * sizeof(int));
     cudaFree(d_img);
 }
