@@ -12,7 +12,7 @@ __global__ void mandelKernel(int* d_img, float lowerX, float lowerY, float stepX
     unsigned int thisY = blockIdx.y * blockDim.y + threadIdx.y;
     size_t g_width = 16;
     size_t g_height = 16;
-    end_j = thisY + g_height;
+    size_t end_j = thisY + g_height;
     for (int j = thisY; j < end_j; j++)
     {
         for (int i = thisX; i < g_width; ++i)
