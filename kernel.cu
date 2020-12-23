@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #define BLOCK_SIZE 16
-__global__ void mandelKernel(int* d_img, float lowerX, float lowerY, float stepX, float stepY, int width, int height, int maxIterations) 
+__global__ void mandelKernel(int* d_img, float lowerX, float lowerY, float stepX, float stepY, int width, int height, int maxIterations, int g_width, int g_height) 
 {
     // To avoid error caused by the floating number, use the following pseudo code
     // float x = lowerX + thisX * stepX;
@@ -10,8 +10,8 @@ __global__ void mandelKernel(int* d_img, float lowerX, float lowerY, float stepX
 
     unsigned int thisX = blockIdx.x * blockDim.x + threadIdx.x;
     unsigned int thisY = blockIdx.y * blockDim.y + threadIdx.y;
-    size_t g_width = 16;
-    size_t g_height = 16;
+    // size_t g_width = 16;
+    // size_t g_height = 16;
     size_t end_j = thisY + g_height;
     for (int j = thisY; j < end_j; j++)
     {
@@ -52,7 +52,10 @@ void hostFE (float upperX, float upperY, float lowerX, float lowerY, int* img, i
     cudaHostAlloc((void **)&host_img, resX * resY * sizeof(int),cudaHostAllocDefault); // kernel2
     dim3 blockSize(BLOCK_SIZE, BLOCK_SIZE);
     dim3 numBlock(resX / BLOCK_SIZE, resY / BLOCK_SIZE);
-    mandelKernel<<<numBlock, blockSize>>>(d_img, lowerX, lowerY, stepX, stepY, resX, resY, maxIterations);
+    size_t g_width = resX / numBlock.x / BLOCK_SIZE;
+    size_t g_height = resY /numBlock.y / BLOCK_SIZE;
+
+    mandelKernel<<<numBlock, blockSize>>>(d_img, lowerX, lowerY, stepX, stepY, resX, resY, maxIterations, g_width, g_height);
     printf("%d, %d\n",numBlock.x, numBlock.y);
     cudaDeviceSynchronize();
     cudaMemcpy(host_img, d_img, resX * resY * sizeof(int), cudaMemcpyDeviceToHost);
