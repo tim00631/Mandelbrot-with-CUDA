@@ -52,7 +52,7 @@ void hostFE (float upperX, float upperY, float lowerX, float lowerY, int* img, i
     cudaHostAlloc((void **)&host_img, resX * resY * sizeof(int),cudaHostAllocDefault); // kernel2
     dim3 blockSize(BLOCK_SIZE, BLOCK_SIZE);
     dim3 numBlock(resX / BLOCK_SIZE, resY / BLOCK_SIZE);
-    printf("%d, %d\n",blockDim.x, blockDim,y);
+    printf("%d, %d\n",blockDim.x, blockDim.y);
     mandelKernel<<<numBlock, blockSize>>>(d_img, lowerX, lowerY, stepX, stepY, resX, resY, maxIterations);
     
     cudaDeviceSynchronize();
