@@ -57,6 +57,7 @@ void hostFE (float upperX, float upperY, float lowerX, float lowerY, int* img, i
 
     mandelKernel<<<numBlock, blockSize>>>(d_img, lowerX, lowerY, stepX, stepY, resX, resY, maxIterations, g_width, g_height);
     printf("%d, %d\n",numBlock.x, numBlock.y);
+    printf("%d, %d\n",g_width, g_height);
     cudaDeviceSynchronize();
     cudaMemcpy(host_img, d_img, resX * resY * sizeof(int), cudaMemcpyDeviceToHost);
     memcpy(img, host_img,resX * resY * sizeof(int));
