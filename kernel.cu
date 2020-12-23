@@ -12,7 +12,7 @@ __global__ void mandelKernel(int* d_img, float lowerX, float lowerY, float stepX
     unsigned int thisY = blockIdx.y * blockDim.y + threadIdx.y;
     size_t g_width = 16;
     size_t g_height = 16;
-    end_j = thisY + g_height;
+    size_t end_j = thisY + g_height;
     for (int j = thisY; j < end_j; j++)
     {
         for (int i = thisX; i < g_width; ++i)
@@ -52,6 +52,7 @@ void hostFE (float upperX, float upperY, float lowerX, float lowerY, int* img, i
     cudaHostAlloc((void **)&host_img, resX * resY * sizeof(int),cudaHostAllocDefault); // kernel2
     dim3 blockSize(BLOCK_SIZE, BLOCK_SIZE);
     dim3 numBlock(resX / BLOCK_SIZE, resY / BLOCK_SIZE);
+    printf("%d, %d\n",blockDim.x, blockDim,y);
     mandelKernel<<<numBlock, blockSize>>>(d_img, lowerX, lowerY, stepX, stepY, resX, resY, maxIterations);
     
     cudaDeviceSynchronize();
