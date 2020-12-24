@@ -21,7 +21,6 @@ __global__ void mandelKernel(
         for (int i = thisX; i < end_i; i++)
         {
             if (i < width && j < height) {
-                float* ptr = rowhead + i;
                 // int idx = j * width + i;
                 float c_re = lowerX + i * stepX;
                 float c_im = lowerY + j * stepY;
@@ -36,7 +35,7 @@ __global__ void mandelKernel(
                     z_re = c_re + new_re;
                     z_im = c_im + new_im;
                 }
-                *ptr = val;
+                rowhead[i] = val;
             }
         }
     }
@@ -60,7 +59,8 @@ void hostFE (float upperX, float upperY, float lowerX, float lowerY, int* img, i
     printf("%d\n", pitch);
     mandelKernel<<<numBlock, blockSize>>>(d_img, lowerX, lowerY, stepX, stepY, resX, resY, maxIterations, g_width, g_height, pitch);
     cudaDeviceSynchronize();
-    cudaMemcpy(host_img, d_img, resX * resY * sizeof(int), cudaMemcpyDeviceToHost);
+    cudaMemcpy2D(host_img, sizeof(int)*resX, d_img, pitch, sizeof(int)*resX, pitch, cudaMemcpyDeviceToHost);
     memcpy(img, host_img,resX * resY * sizeof(int));
     cudaFree(d_img);
+    free(host_img);
 }
