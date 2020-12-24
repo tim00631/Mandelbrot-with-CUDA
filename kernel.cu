@@ -14,10 +14,10 @@ __global__ void mandelKernel(
     unsigned int thisY = blockIdx.y * blockDim.y + threadIdx.y;
     int end_j = thisY + g_height;
     int end_i = thisX + g_width;
-    float * rowhead;
+    int * rowhead;
     for (int j = thisY; j < end_j; j++)
     {
-        rowhead = (float*)((char*)d_img + j*pitch);
+        rowhead = (int*)((char*)d_img + j*pitch);
         for (int i = thisX; i < end_i; i++)
         {
             if (i < width && j < height) {
