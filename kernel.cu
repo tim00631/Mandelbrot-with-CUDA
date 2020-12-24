@@ -17,7 +17,7 @@ __global__ void mandelKernel(
     float * rowhead;
     for (int j = thisY; j < end_j; j++)
     {
-        rowhead = (float*)((char*)d_img + j*pitch)
+        rowhead = (float*)((char*)d_img + j*pitch);
         for (int i = thisX; i < end_i; i++)
         {
             if (i < width && j < height) {
