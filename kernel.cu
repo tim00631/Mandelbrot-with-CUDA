@@ -14,12 +14,15 @@ __global__ void mandelKernel(
     unsigned int thisY = blockIdx.y * blockDim.y + threadIdx.y;
     int end_j = thisY + g_height;
     int end_i = thisX + g_width;
+    float * rowhead;
     for (int j = thisY; j < end_j; j++)
     {
+        rowhead = (float*)((char*)d_img + j*pitch)
         for (int i = thisX; i < end_i; i++)
         {
             if (i < width && j < height) {
-                int idx = j * width + i;
+                float* ptr = rowhead + i;
+                // int idx = j * width + i;
                 float c_re = lowerX + i * stepX;
                 float c_im = lowerY + j * stepY;
                 float z_re = c_re, z_im = c_im;
@@ -33,7 +36,7 @@ __global__ void mandelKernel(
                     z_re = c_re + new_re;
                     z_im = c_im + new_im;
                 }
-                d_img[idx] = val;
+                *ptr = val;
             }
         }
     }
