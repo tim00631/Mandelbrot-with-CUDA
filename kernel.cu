@@ -10,6 +10,7 @@ __global__ void mandelKernel(int* d_img, float lowerX, float lowerY, float stepX
 
     unsigned int thisX = blockIdx.x * blockDim.x + threadIdx.x;
     unsigned int thisY = blockIdx.y * blockDim.y + threadIdx.y;
+    
     if (thisX < width && thisY < height) {
         int idx = thisY * width + thisX;
         float c_re = lowerX + thisX * stepX;
@@ -36,11 +37,9 @@ void hostFE (float upperX, float upperY, float lowerX, float lowerY, int* img, i
     int* d_img, *host_img;
     float stepX = (upperX - lowerX) / resX;
     float stepY = (upperY - lowerY) / resY;
-    // cudaMalloc((void **)&d_img, resX * resY * sizeof(int)); // kernel1
-    // host_img = (int *) malloc(resX * resY * sizeof(int)); // kernel1
-    size_t pitch; // kernel2
-    cudaMallocPitch((void **)&d_img, &pitch, sizeof(float)*resX, resY); // kernel2
-    cudaHostAlloc((void **)&host_img, resX * resY * sizeof(int),cudaHostAllocDefault); // kernel2
+    cudaMalloc((void **)&d_img, resX * resY * sizeof(int));
+    host_img = (int *) malloc(resX * resY * sizeof(int)); // kernel1
+    // cudaHostAlloc((void **)&host_img, resX * resY * sizeof(int),cudaHostAllocDefault); // kernel2
     dim3 blockSize(BLOCK_SIZE, BLOCK_SIZE);
     dim3 numBlock(resX / BLOCK_SIZE, resY / BLOCK_SIZE);
     mandelKernel<<<numBlock, blockSize>>>(d_img, lowerX, lowerY, stepX, stepY, resX, resY, maxIterations);
