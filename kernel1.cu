@@ -10,6 +10,7 @@ __global__ void mandelKernel(int* d_img, float lowerX, float lowerY, float stepX
 
     unsigned int thisX = blockIdx.x * blockDim.x + threadIdx.x;
     unsigned int thisY = blockIdx.y * blockDim.y + threadIdx.y;
+    
     if (thisX < width && thisY < height) {
         int idx = thisY * width + thisX;
         float c_re = lowerX + thisX * stepX;
